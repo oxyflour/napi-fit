@@ -1,5 +1,6 @@
 #include <napi.h>
 #include "tpl.h"
+#include "grid.h"
 
 #ifndef FIT_H
 #define FIT_H
@@ -17,6 +18,13 @@
 #define LIBFUNC(lib, fn) GetProcAddress((lib), (fn))
 #endif
 
+typedef struct CompileResult {
+    int code;
+    std::string log;
+    std::string dll;
+    std::string cmd;
+} CompileResult;
+
 class FitSolver : public Napi::ObjectWrap<FitSolver> {
 public:
     static void Init(Napi::Env env, Napi::Object exports);
@@ -33,8 +41,7 @@ private:
     step_ptr fStep;
     quit_ptr fQuit;
 
-    int nx, ny, nz;
-    double *xs, *ys, *zs;
+    Grid grid;
     float *le, *re, *lh, *rh;
 };
 

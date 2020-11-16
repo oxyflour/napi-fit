@@ -17,16 +17,14 @@ const { fit: { Solver }, occ: { Mesher }, cst: { Project } } = require('.'),
     { dt, tn } = proj.getMeta(),
     src = makeSrc(proj, dt, tn),
     mats = { eps: proj.getMatrix(100), mue: proj.getMatrix(101) },
-    solver = new Solver(grid, mats, dt)
+    port = { src: [25e-3, 0, 2e-3], dst: [25e-3, 0, -2e-3] },
+    solver = new Solver(grid, port, mats, dt)
 
 console.time('run')
 console.log(`dt ${dt * 1e9} ns, ${tn} time steps`)
-const csv = []
-for (let i = 0; i < tn; i ++) {
-    const s = solver.step(src[i])
-    csv.push(`${i},${src[i]},${s}`)
-}
-fs.writeFileSync('build/plot.csv', csv.join('\n'))
+const out = solver.step(src),
+    csv = Array.from(out).map((sig, idx) => `${idx},${src[idx]},${sig}`).join('\n')
+fs.writeFileSync('build/plot.csv', csv)
 console.timeEnd('run')
 
 proj.destroy()
